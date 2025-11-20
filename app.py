@@ -8,20 +8,22 @@ st.set_page_config(page_title="Suivi RDV", layout="wide")
 st.title("Dashboard RDV LeadGen")
 
 # --- 1. CONNEXION GOOGLE SHEETS ---
-# Récupération du chemin absolu vers credentials.json
-current_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(current_dir, 'credentials.json')
-gc = gspread.service_account(filename=json_path)
+# On regarde si le fichier existe (mode local) ou si on est sur le cloud (st.secrets)
+if os.path.exists("credentials.json"):
+    gc = gspread.service_account(filename="credentials.json")
+else:
+    # Mode Cloud : on récupère les infos depuis les secrets Streamlit
+    credentials_dict = st.secrets["gcp_service_account"]
+    gc = gspread.service_account_from_dict(credentials_dict)
 
-# ID du Google Sheet (REMPLACEZ PAR VOTRE ID)
-SHEET_ID = "1oThuV40f0y5rKAMlmyiLVviZ-ITNAQAl0zMevO4fjlg" 
+# ID du Google Sheet
+SHEET_ID = "1oThuV40f0y5rKAMlmyiLVviZ-ITNAQAl0zMevO4fjlg" # Votre ID est déjà là
 
 try:
     sh = gc.open_by_key(SHEET_ID)
-    # CIBLEZ LA FEUILLE PAR SON NOM EXACT ICI :
     worksheet = sh.worksheet("RDV/jour")
 except Exception as e:
-    st.error(f"Erreur : Impossible de trouver la feuille 'RDV/jour' ou le fichier. Détails : {e}")
+    st.error(f"Erreur de connexion : {e}")
     st.stop()
 
 # --- 2. TRAITEMENT DES DONNÉES ---
@@ -175,4 +177,5 @@ if not df_oe.empty:
     with st.expander("Voir les données L'oeil des Experts"):
         st.dataframe(df_oe)
 else:
+
     st.warning("Aucune donnée trouvée pour 'L'oeil des Experts'. (C'est normal si la date du jour est avant le 24/11/2025 et que le fichier n'est pas rempli, ou vérifiez l'orthographe exact).")
