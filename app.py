@@ -5,6 +5,35 @@ import os
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="Suivi RDV", layout="wide")
+# --- SECURITE : FONCTION LOGIN ---
+def check_password():
+    """Retourne True si l'utilisateur a le bon mot de passe."""
+    def password_entered():
+        # Vérifie si le mdp saisi correspond à celui dans les secrets
+        if st.session_state["password"] == st.secrets["password"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Sécurité : on efface le mdp
+        else:
+            st.session_state["password_correct"] = False
+
+    # Si le mot de passe n'a pas encore été validé
+    if "password_correct" not in st.session_state:
+        st.text_input("🔒 Veuillez entrer le mot de passe", type="password", on_change=password_entered, key="password")
+        return False
+    
+    # Si le mot de passe est incorrect
+    elif not st.session_state["password_correct"]:
+        st.text_input("🔒 Veuillez entrer le mot de passe", type="password", on_change=password_entered, key="password")
+        st.error("⛔ Mot de passe incorrect")
+        return False
+    
+    # Si tout est bon
+    else:
+        return True
+
+# Si le mot de passe n'est pas bon, on arrête tout ici
+if not check_password():
+    st.stop()
 st.title("Dashboard RDV LeadGen")
 
 # --- 1. CONNEXION GOOGLE SHEETS ---

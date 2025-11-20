@@ -1,0 +1,10 @@
+# --- SÉCURITÉ (NE JAMAIS ENLEVER) ---
+credentials.json
+.streamlit/secrets.toml
+
+# --- Python & Système ---
+__pycache__/
+*.pyc
+.DS_Store
+venv/
+.env
