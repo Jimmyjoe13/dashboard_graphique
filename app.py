@@ -3,7 +3,7 @@ import pandas as pd
 import gspread
 import os
 import altair as alt 
-from datetime import datetime # Nécessaire pour récupérer la date du jour
+from datetime import datetime 
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="Suivi RDV", layout="wide")
@@ -64,7 +64,7 @@ else:
 # Colonnes à tracer
 cols_to_plot = ['NOMBRE DE RDV PRIS', 'NOMBRE DE RDV PLANIFIÉ']
 
-# --- FONCTION D'AFFICHAGE OPTIMISÉE (AVEC LIGNE AUJOURD'HUI) ---
+# --- FONCTION D'AFFICHAGE OPTIMISÉE ---
 def afficher_graphique_interactif(dataframe, couleurs=["#3366cc", "#dc3912"]):
     # 1. Préparation des courbes
     df_melted = dataframe.melt('DATE', value_vars=cols_to_plot, var_name='Type', value_name='Nombre')
@@ -96,7 +96,8 @@ def afficher_graphique_interactif(dataframe, couleurs=["#3366cc", "#dc3912"]):
     # 3. Combinaison des deux
     final_chart = alt.layer(base, rule).interactive()
     
-    st.altair_chart(final_chart, use_container_width=True)
+    # CORRECTION ICI : Remplacement de use_container_width=True par width="stretch"
+    st.altair_chart(final_chart, width="stretch")
 
 # --- 3. GRAPHIQUE : PLAISIRS ET PAPILLES ---
 st.header("📈 Campagne : Plaisirs et Papilles")
